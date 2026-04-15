@@ -1,0 +1,61 @@
+services:
+  gateway:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    #depends_on:
+     # gemma-vllm:
+      #  condition: service_healthy
+      #mpnet-tei:
+       # condition: service_healthy
+      #whisper-api:
+       # condition: service_healthy
+    restart: always
+  
+  gemma-vllm:
+    image: vllm/vllm-openai:v0.19.0
+    command: --model "google/gemma-4-E4B-it"
+    environment:
+      - HF_TOKEN=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
+    ports:
+      - "8000:8000"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: always  
+
+  mpnet-tei:
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-latest
+    command: --model-id sentence-transformers/all-mpnet-base-v2
+    ports:
+      - "8080:80"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: always
+
+  whisper-api:
+    image: fedirz/faster-whisper-server:latest-cpu
+    environment:
+      - WHISPER_MODEL=base
+    ports:
+      - "9000:8000"
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/v1/models')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    restart: always
