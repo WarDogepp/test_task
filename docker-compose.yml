@@ -18,10 +18,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.vllm
-    command: --model "google/gemma-4-E4B-it" --trust-remote-code --gpu-memory-utilization 0.90 --quantization fp8 --max-model-len 4096
+    command: --model "google/gemma-4-E4B-it" --trust-remote-code
     environment:
-      - HF_TOKEN=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
-      - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+      - HF_TOKEN=hf_your_hugginface_token
     ports:
       - "8000:8000"
     deploy:
@@ -33,7 +32,7 @@ services:
               capabilities: [gpu]
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 450s
+      interval: 60s
       timeout: 10s
       retries: 3
     restart: always  
@@ -44,7 +43,6 @@ services:
     ports:
       - "8080:80"
     healthcheck:
-      #test: ["CMD", "exit", "1"]
       test: ["CMD", "curl", "-f", "http://localhost:80/health"]
       interval: 30s
       timeout: 10s
