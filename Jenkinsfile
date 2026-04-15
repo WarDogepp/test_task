@@ -15,11 +15,11 @@ pipeline {
         stage('Health Check & Recovery') {
             steps {
                 script {
-                    def unhealthy = sh(script: "docker ps -q -f health=unhealthy", returnStdout: true).trim()
+                    def unhealthy = sh(script: "sudo docker ps -q -f health=unhealthy", returnStdout: true).trim()
                     
                     if (unhealthy) {
                         echo "Detected unhealthy services. Restarting stack..."
-                        sh 'docker compose restart'
+                        sh 'sudo docker compose restart'
                     } else {
                         echo "All services are healthy."
                     }
