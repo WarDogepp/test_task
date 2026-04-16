@@ -5,13 +5,13 @@ services:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    #depends_on:
-     #gemma-vllm:
-       #condition: service_healthy
-     #mpnet-tei:
-       #condition: service_healthy
-     #whisper-api:
-       #condition: service_healthy
+    depends_on:
+     gemma-vllm:
+       condition: service_healthy
+     mpnet-tei:
+       condition: service_healthy
+     whisper-api:
+       condition: service_healthy
     restart: always
   
   gemma-vllm:
@@ -20,7 +20,7 @@ services:
       dockerfile: Dockerfile.vllm
     command: --model "google/gemma-4-E4B-it" --trust-remote-code
     environment:
-      - HF_TOKEN=hf_your_hugginface_token
+      - HF_TOKEN=${HF_TOKEN}
     ports:
       - "8000:8000"
     deploy:
