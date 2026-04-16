@@ -18,7 +18,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.vllm
-    command: --model "google/gemma-4-E4B-it" --trust-remote-code
+    command: --model "${GEMMA_MODEL}" --trust-remote-code
     environment:
       - HF_TOKEN=${HF_TOKEN}
     ports:
