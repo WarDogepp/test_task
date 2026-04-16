@@ -50,6 +50,7 @@ python validate.py embed --text "hello world"
 
 # Test text+image inference
 python validate.py chat --prompt "Describe this image" --image test.jpeg
+```
 
 ## Operations & Jenkins Pipeline
 
